@@ -1,10 +1,10 @@
 ---
-title: Applications
+title: Overview
 Description: A Nexmo application contains the security and configuration information you need to connect to Nexmo endpoints and use the Nexmo APIs.
 navigation_weight: 1
 ---
 
-# Application Overview
+# Overview
 
 A Nexmo application contains the security and configuration information you need to connect to Nexmo endpoints and use the Nexmo APIs.
 
@@ -53,15 +53,11 @@ Capability | Webhook | Example | Description
 
 There are four main ways to create an application:
 
-1. In the Nexmo Dashboard (this is currently restricted to Applications with a single fixed capability).
+1. In the Nexmo Dashboard (this is currently restricted to v1 Applications with a single fixed capability).
 2. Using the Nexmo CLI.
 3. Using the [Applications API](https://developer.nexmo.com/api/application.v2).
 4. Using one of the Nexmo client libraries.
 
-Examples of using these techniques are shown in the following section.
-
 ## Getting started with applications
 
-```tabbed_content
-source: _examples/concepts/guides/applications/
-```
+Using CLI...
