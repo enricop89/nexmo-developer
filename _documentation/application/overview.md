@@ -10,6 +10,8 @@ A Nexmo application contains the security and configuration information you need
 
 Each Nexmo application created can support multiple capabilities - for example you can create an Application that supports using the Voice, Messages and RTC APIs.
 
+![Application Overview](/assets/images/nexmo_application_v2.png "Application Overview")
+
 ## Structure
 
 Each application has the following:
