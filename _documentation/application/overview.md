@@ -27,21 +27,33 @@ Name | Description
 
 ## Application capabilities
 
-A Nexmo aplication can be multifunctional, in that one Nexmo application can use various APIs, including VAPI, Messages and Dispatch and RTC/Client SDK applications. When creating an application you can specify the capabilities you want your application to support. This means you can set webhooks depending on what capabilities you want, for example for an application with an `rtc` capability you could specify an event URL to receive RTC events. If your application also wanted to exploit `voice` capabilities you could also potentially set an Answer URL to receive a call answered webhook, and another event URL to receive voice call related events.
+A Nexmo application can be multifunctional, in that one Nexmo application can use various APIs, including Voice, Messages and Dispatch, Conversation, and Client SDK.
+
+When creating an application you can specify the capabilities you want your application to support. For each capability you can set webhooks depending on what capabilities you want, for example for an application with an `rtc` capability you could specify an event URL to receive RTC events. If your application also wanted to exploit `voice` capabilities you could also potentially set an Answer URL to receive a call answered webhook, and another event URL to receive voice call related events.
+
+A summary of capabilities is given in the following table:
+
+Capability | Description
+---|---
+`voice` | Used to support Voice capabilities.
+`messages` | Used to support Messages and Dispatch API capabilities.
+`rtc` | Used to support WebRTC capabilities. Typically for use with Client SDK.
+`vbc` | Used to determine pricing, but currently has no other capabilities.
 
 ## Webhooks
 
 The webhook URLs you provide when creating an application depend on the application capabilities required. The following table summarizes the webhooks:
 
-API used | Capability | Webooks available
+Capability | API used | Webooks available
 --- | --- | ---
-Voice | `voice` | answer, event
-Messages and Dispatch | `messages` | inbound, status
-Client SDK | `rtc` | event
+`voice` | Voice | answer, event
+`messages` | Messages and Dispatch | inbound, status
+`rtc` | Client SDK | event
+`vbc` | VBC | None
 
 ## Webhook types
 
-Table describing webhooks per capability:
+The following table describes webhooks available per capability:
 
 Capability | Webhook | Example | Description
 --- | --- | --- | ---
@@ -50,6 +62,7 @@ Capability | Webhook | Example | Description
 `messages` | Inbound | https://example.com/webhooks/inbound | Nexmo will forward inbound messages to this URL.
 `messages` | Status | https://example.com/webhooks/status | Nexmo will send message status updates (for example, `delivered`, `seen`) to this URL.
 `rtc` | Event | https://example.com/webhooks/rtcevent | Nexmo will send RTC events to this URL.
+`vbc` | None | None | Not used
 
 ## Creating applications
 
@@ -62,4 +75,4 @@ There are four main ways to create an application:
 
 ## Getting started with applications
 
-Using CLI...
+Using CLI (awaiting CLI support).
