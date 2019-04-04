@@ -20,7 +20,7 @@ Name | Description
 -- | --
 `ID` | Used to identify each application and used in conjunction with `private_key` to generate JWTs.
 `name` | The application name.
-`capabilities` | Describes the types of functionality this application will support. The capabilities `voice`, `messages`, `rtc`. Any number of these capabilities can be supported in one application.
+`capabilities` | Describes the types of functionality this application will support. The capabilities `voice`, `messages`, `rtc`, `vbc`. Any number of these capabilities can be supported in one application.
 `private_key` | You use the private key to generate the JWTs used to authenticate your calls to the Nexmo APIs.
 `public_key` | Used by Nexmo to authenticate the JWT in your requests to Nexmo API.
 `webhooks` | Nexmo sends and retrieves information via your webhook endpoints.
