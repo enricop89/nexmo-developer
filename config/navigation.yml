@@ -58,15 +58,24 @@ navigation_overrides:
   messaging:
     svg: 'message'
     svgColor: 'purple'
+    sms:
+      collapsible: true
+    conversion-api:
+      collapsible: true
+    us-short-codes:
+      collapsible: true
   voice:
     svg: 'phone'
     svgColor: 'green'
     voice-api:
+      collapsible: true
       guides:
         lex-connector:
           label: 'Developer Preview'
         websockets:
           label: 'Beta'
+    sip:
+      collapsible: true
   verify:
     svg: 'lock'
     svgColor: 'indigo'
@@ -76,6 +85,8 @@ navigation_overrides:
   account:
     svg: 'user'
     svgColor: 'blue'
+    secret-management:
+      collapsible: true
   redact:
     label: 'Developer Preview'
     svg: 'lock'
@@ -86,7 +97,12 @@ navigation_overrides:
     label: 'Developer Preview'
     sdk-documentation:
       link: false
-      prevent_navigation_item_class: true
+    setup:
+      collapsible: true
+    in-app-voice:
+      collapsible: true
+    in-app-messaging:
+      collapsible: true
   numbers:
     svg: 'phone-number'
     svgColor: 'red'
