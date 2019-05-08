@@ -1,5 +1,6 @@
 class ApiErrorsController < ApplicationController
   before_action :error_config
+  before_action :validate_subapi
 
   def index
     @errors_title = 'Generic Errors'
@@ -36,8 +37,18 @@ class ApiErrorsController < ApplicationController
   end
 
   def scoped_errors(definition)
-    definition = OpenApiDefinitionResolver.find(definition)
-    errors = definition.raw['x-errors']
+    # Find all versions of an API and show the details
+    definitions = OpenApiConstraint.list.select do |name|
+      name == definition || /#{definition}\.v(\d+)/.match(name)
+    end
+
+    # Load the errors from all versions
+    errors = {}
+    definitions.each do |d|
+      definition = OpenApiDefinitionResolver.find(d)
+      errors = errors.deep_merge(definition.raw['x-errors']) if definition.raw['x-errors']
+    end
+
     ApiError.parse_config(errors)
   end
 
@@ -49,5 +60,19 @@ class ApiErrorsController < ApplicationController
 
   def error_config
     @error_config ||= YAML.load_file("#{Rails.root}/config/api-errors.yml")
+  end
+
+  def validate_subapi
+    # If there is no subapi specified, everything is fine
+    return unless params[:subapi]
+
+    # We used to have some OAS documents that have since been merged in to the top
+    # level OAS documents, but we still need to support the old URLs
+    # e.g. account/secret-management
+    allowed_subapis = {
+      'account' => ['secret-management'],
+    }
+
+    render_not_found unless allowed_subapis[params[:definition]]&.include? params[:subapi]
   end
 end

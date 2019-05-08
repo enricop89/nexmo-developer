@@ -1,6 +1,5 @@
 class ApplicationController < ActionController::Base
-  rescue_from Errno::ENOENT, with: :no_document
-  rescue_from Errno::ENOENT, with: :no_document
+  rescue_from Errno::ENOENT, with: :not_found
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
   protect_from_forgery with: :exception
 
@@ -8,7 +7,7 @@ class ApplicationController < ActionController::Base
 
   force_ssl if: :ssl_configured?
   before_action :set_show_feedback
-  before_action :notices
+  before_action :set_notices
   before_action :set_code_language
   before_action :set_feedback_author
 
@@ -33,17 +32,13 @@ class ApplicationController < ActionController::Base
     ENV['USERNAME'] && ENV['PASSWORD']
   end
 
-  def no_document
-    not_found
-  end
-
   def set_show_feedback
     @show_feedback = true
   end
 
   def set_code_language
     return unless request.params[:code_language]
-    @code_language = CodeLanguageResolver.find(request.params[:code_language])
+    @code_language = CodeLanguage.find(request.params[:code_language])
   end
 
   def ssl_configured?
@@ -53,8 +48,8 @@ class ApplicationController < ActionController::Base
     true
   end
 
-  def notices
-    @notices ||= YAML.load_file("#{Rails.root}/config/notices.yml")
+  def set_notices
+    @notices = YAML.load_file("#{Rails.root}/config/notices.yml")
   end
 
   def set_feedback_author

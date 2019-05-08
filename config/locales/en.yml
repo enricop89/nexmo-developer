@@ -56,7 +56,6 @@ en:
     quickstarts: Quickstarts
     tutorials: Tutorials
     conversion-api: Conversion API
-    sns: SNS
     concepts: Concepts
     code-snippets: Code Snippets
     verify: Verify
@@ -80,7 +79,9 @@ en:
     extension-api: Extension API
     user-api: User API
     getting-started: Getting Started
+    setup: Setup
 
     administration: Administration
     tasks: Tasks
     application: Application
+    product-lifecycle: Product Lifecycle

@@ -7,7 +7,7 @@ class CodeSnippetFilter < Banzai::Filter
 
       @renderer = get_renderer(config['language'])
 
-      lexer = CodeLanguageResolver.find(config['language']).lexer
+      lexer = CodeLanguage.find(config['language']).lexer
       lang = config['title'].delete('.')
 
       application_html = generate_application_block(config['application'])
@@ -69,7 +69,7 @@ class CodeSnippetFilter < Banzai::Filter
     raise "CodeSnippetFilter - Could not load #{filename} for language #{language}" unless File.exist?(filename)
 
     code = File.read(filename)
-    lexer = CodeLanguageResolver.find(language).lexer
+    lexer = CodeLanguage.find(language).lexer
 
     total_lines = code.lines.count
 
@@ -116,6 +116,13 @@ class CodeSnippetFilter < Banzai::Filter
   end
 
   def generate_dependencies(language, dependencies)
+    # The only valid dependency for curl examples is `JWT`
+    dependencies = dependencies.map(&:upcase)
+    if dependencies.include?('JWT')
+      title = 'Generate your JWT'
+    else
+      title = 'Install dependencies'
+    end
     deps = @renderer.dependencies(dependencies)
     id = SecureRandom.hex
     erb = File.read("#{Rails.root}/app/views/code_snippets/_dependencies.html.erb")

@@ -13,6 +13,7 @@ Rails.application.routes.draw do
 
   namespace :admin_api, defaults: { format: 'json' } do
     resources :feedback, only: [:index]
+    resources :code_snippets, only: [:index]
   end
 
   get '/robots.txt', to: 'static#robots'
@@ -31,8 +32,8 @@ Rails.application.routes.draw do
   get '/stats', to: 'dashboard#stats'
   get '/stats/summary', to: 'dashboard#stats_summary'
 
-  get '/tutorials/(:code_language)', to: 'tutorials#index', constraints: DocumentationConstraint.code_language
-  get '/tutorials/*document(/:code_language)', to: 'tutorials#show', constraints: DocumentationConstraint.code_language
+  get '/tutorials/(:code_language)', to: 'tutorials#index', constraints: CodeLanguage.route_constraint
+  get '/tutorials/*document(/:code_language)', to: 'tutorials#show', constraints: CodeLanguage.route_constraint
   get '/*product/tutorials(/:code_language)', to: 'tutorials#index', constraints: lambda { |request|
     products = DocumentationConstraint.product_with_parent_list
 
@@ -41,7 +42,7 @@ Rails.application.routes.draw do
 
     # If there's a language in the URL, match on that too
     if request['code_language']
-      language = DocumentationConstraint.code_language_list.map(&:downcase)
+      language = CodeLanguage.linkable.map(&:key).map(&:downcase)
       includes_language = language.include?(request['code_language'])
     end
 
@@ -50,7 +51,6 @@ Rails.application.routes.draw do
 
   get '/documentation', to: 'static#documentation'
 
-  get '/migrate/tropo', to: 'static#migrate'
   get '/migrate/tropo/(/*guide)', to: 'static#migrate_details'
 
   get '/legacy', to: 'static#legacy'
@@ -73,8 +73,8 @@ Rails.application.routes.draw do
 
   get '/api-errors', to: 'api_errors#index'
   get '/api-errors/generic/:id', to: 'api_errors#show'
-  get '/api-errors/*definition', to: 'api_errors#index_scoped', as: 'api_errors_scoped', constraints: OpenApiConstraint.products
-  get '/api-errors/*definition/:id', to: 'api_errors#show', constraints: OpenApiConstraint.products
+  get '/api-errors/:definition(/*subapi)', to: 'api_errors#index_scoped', as: 'api_errors_scoped', constraints: OpenApiConstraint.errors_available
+  get '/api-errors/*definition/:id', to: 'api_errors#show', constraints: OpenApiConstraint.errors_available
 
   get '/api', to: 'api#index'
 
@@ -83,13 +83,17 @@ Rails.application.routes.draw do
     request['definition'] == 'verify' && request['code_language'] == 'templates'
   }
 
-  get '/api/*definition(/:code_language)', to: 'open_api#show', as: 'open_api', constraints: OpenApiConstraint.products
-  get '/api/*document(/:code_language)', to: 'api#show', constraints: DocumentationConstraint.code_language
+  get '/api/*definition(/:code_language)', to: 'open_api#show', as: 'open_api', constraints: OpenApiConstraint.products_with_code_language
+  get '/api/*document(/:code_language)', to: 'api#show', constraints: CodeLanguage.route_constraint
 
   get '/(:product)/task/(:task_name)(/*task_step)(/:code_language)', to: 'task#index', constraints: DocumentationConstraint.documentation
-  get '/task/(:task_name)(/*task_step)(/:code_language)', to: 'task#index', constraints: CodeLanguageResolver.route_constraint
+  get '/task/(:task_name)(/*task_step)(/:code_language)', to: 'task#index', constraints: CodeLanguage.route_constraint
 
   get '/*product/api-reference', to: 'markdown#api'
+
+  scope '(:namespace)', namespace: 'product-lifecycle' do
+    get '/product-lifecycle/*document', to: 'markdown#show'
+  end
 
   scope '(:namespace)', namespace: /contribute/, defaults: { namespace: '' } do
     get '/*document(/:code_language)', to: 'markdown#show', constraints: DocumentationConstraint.documentation
@@ -97,7 +101,6 @@ Rails.application.routes.draw do
 
   get '/:product/*document(/:code_language)', to: 'markdown#show', constraints: DocumentationConstraint.documentation
 
-  get '/:product/building-blocks(/:code_language)', to: redirect('/:product/code-snippets(/:code_language)'), constraints: DocumentationConstraint.documentation
   get '*unmatched_route', to: 'application#not_found'
 
   root 'static#landing'

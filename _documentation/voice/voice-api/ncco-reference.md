@@ -18,7 +18,7 @@ The NCCO actions and the options and types for each action are:
 Action | Description | Synchronous
 -- | -- | --
 [record](#record) | All or part of a Call | No
-[conversation](#conversation) | A standard or hosted conference. | Yes
+[conversation](#conversation) | Create or join an existing [Conversation](/conversation/concepts/conversation) | Yes
 [connect](#connect) | To a connectable endpoint such as a phone number or VBC extension. | Yes
 [talk](#talk) | Send synthesized speech to a Conversation. | Yes, unless *bargeIn=true*
 [stream](#stream) | Send audio files to a Conversation. | Yes, unless *bargeIn=true*
@@ -97,7 +97,7 @@ Possible return parameters are:
 
 ## Conversation
 
-You can use the `conversation` action to create standard or moderated conferences. The first person to call the virtual number assigned to the conversation creates it. This action is synchronous, the conversation lasts until the number of participants is 0.
+You can use the `conversation` action to create standard or moderated conferences, while preserving the communication context. Using `conversation` with the same `name` reuses the same persisted [Conversation](/conversation/concepts/conversation). The first person to call the virtual number assigned to the conversation creates it. This action is synchronous.
 
 > **Note**: you can invite up to 50 people to your Conversation.
 
@@ -111,7 +111,7 @@ You can use the following options to control a *conversation* action:
 
 Option | Description | Required
 -- | -- | --
-`name` | The name of the Conversation room. Names have to be unique per account. | Yes
+`name` | The name of the Conversation room. Names are namespaced to the application level. | Yes
 `musicOnHoldUrl` | A URL to the *mp3* file to stream to participants until the conversation starts. By default the conversation starts when the first person calls the virtual number associated with your Voice app. To stream this mp3 before the moderator joins the conversation, set *startOnEnter* to *false* for all users other than the moderator. | No
 `startOnEnter` | The default value of *true* ensures that the conversation starts when this caller joins conversation `name`. Set to *false* for attendees in a moderated conversation. | No
 `endOnExit` | For moderated conversations, set to *true* in the moderator NCCO so the conversation is ended when the moderator hangs up. The default value of *false* means the conversation is not terminated when a caller hangs up; the conversation ends when the last caller hangs up. | No
@@ -138,11 +138,11 @@ You can use the following options to control a `connect` action:
 Option | Description | Required
 -- | -- | --
 `endpoint` | Connect to a single endpoint. [Available endpoint types](#endpoint-types-and-values) | Yes
-`from` | A number in [E.164](https://en.wikipedia.org/wiki/E.164) format that identifies the caller.§§ This must be one of your Nexmo virtual numbers, another value will result in the caller ID being unknown. | No
-`eventType` | Set to `synchronous` to: <ul markdown="1"><li>make the `connect` action synchronous</li><li>enable `eventUrl` to return an NCCO that overrides the current NCCO when a call moves to specific states.</li></ul> | No
+`from` | A number in [E.164](https://en.wikipedia.org/wiki/E.164) format that identifies the caller.§§ This must be one of your Nexmo virtual numbers, another value will result in the caller ID being unknown. If the caller is an app user, this option should be omitted.| No
+`eventType` | Set to `synchronous` to: <ul class="Vlt-list Vlt-list--simple"><li>make the `connect` action synchronous</li><li>enable `eventUrl` to return an NCCO that overrides the current NCCO when a call moves to specific states.</li></ul> | No
 `timeout` |  If the call is unanswered, set the number in seconds before Nexmo stops ringing `endpoint`. The default value is `60`.
 `limit` | Maximum length of the call in seconds. The default and maximum value is `7200` seconds (2 hours). | No
-`machineDetection` | Configure the behavior when Nexmo detects that a destination is an answerphone. Set to either: <ul markdown="1"><li>`continue` - Nexmo sends an HTTP request to `event_url` with the Call event `machine`</li><li>`hangup` - end the Call</li></ul>   |
+`machineDetection` | Configure the behavior when Nexmo detects that a destination is an answerphone. Set to either: <ul class="Vlt-list Vlt-list--simple"><li>`continue` - Nexmo sends an HTTP request to `event_url` with the Call event `machine`</li><li>`hangup` - end the Call</li></ul>   |
 `eventUrl` | Set the webhook endpoint that Nexmo calls asynchronously on each of the possible [Call States](/voice/voice-api/guides/call-flow#call-states). If `eventType` is set to `synchronous` the `eventUrl` can return an NCCO that overrides the current NCCO when a timeout occurs. | No
 `eventMethod` | The HTTP method Nexmo uses to make the request to <i>eventUrl</i>. The default value is `POST`. | No
 
@@ -152,9 +152,15 @@ Option | Description | Required
 
 Value | Description
 -- | --
-`number` | the phone number to connect to in [E.164](https://en.wikipedia.org/wiki/E.164) format.
-`dtmfAnswer` | Set the digits that are sent to the user as soon as the Call is answered. The * and # digits are respected. You create pauses using p. Each pause is 500ms.
-`onAnswer` | An object containing a `url` key. The URL serves an NCCO to execute in the connected number before the call is joined to your existing conversation
+`number` | The phone number to connect to in [E.164](https://en.wikipedia.org/wiki/E.164) format.
+`dtmfAnswer` | Set the digits that are sent to the user as soon as the Call is answered. The `*` and `#` digits are respected. You create pauses using `p`. Each pause is 500ms.
+`onAnswer` | A JSON object containing a required `url` key. The URL serves an NCCO to execute in the number being connected to, before that call is joined to your existing conversation. Optionally, the `ringback` key can be specified with a URL value that points to a ringtone to be played back to the caller, so they do not hear just silence. The ringtone will automatically stop playing when the call is fully connected. Example: `{“url”:"https://example.com/answer", "ringback":"http://example.com/ringtone.wav" }`.
+
+#### app - Connect the call to an app
+
+Value | Description
+-- | --
+`user` | the username of the user to connect to. This username must have been [added as a user](/api/conversation#createUser)
 
 #### Websocket - the websocket to connect to
 
@@ -195,7 +201,7 @@ You can use the following options to control a *talk* action:
 | Option | Description | Required |
 | -- | -- | -- |
 | `text` | A string of up to 1,500 characters (excluding SSML tags) containing the message to be synthesized in the Call or Conversation. A single comma in `text` adds a short pause to the synthesized speech. To add a longer pause a `break` tag needs to be used in SSML. To use [SSML](/voice/voice-api/guides/ssml) tags, you must enclose the text in a `speak` element. | Yes |
-| `bargeIn` | Set to `true` so this action is terminated when the user presses a button on the keypad. Use this feature to enable users to choose an option without having to listen to the whole message in your <a href="/voice/voice-api/guides/interactive-voice-response">Interactive Voice Response (IVR)</a>. If you set `bargeIn` to `true` the next action in the NCCO stack <b>must</b> be an `input` action. The default value is `false`. | No |
+| `bargeIn` | Set to `true` so this action is terminated when the user presses a button on the keypad. Use this feature to enable users to choose an option without having to listen to the whole message in your <a href="/voice/voice-api/guides/interactive-voice-response">Interactive Voice Response (IVR)</a>. If you set `bargeIn` to `true` the next non-talk action in the NCCO stack <b>must</b> be an `input` action. The default value is `false`. <br /><br />Once `bargeIn` is set to `true` it will stay `true` (even if `bargeIn: false` is set in a following action) until an `input` action is encountered | No |
 | `loop` | The number of times `text` is repeated before the Call is closed. The default value is 1. Set to 0 to loop infinitely. | No |
 | `level` | The volume level that the speech is played. This can be any value between `-1` to `1` with `0` being the default.  | No |
 | `voiceName` | The name of the voice used to deliver `text`. You use the voiceName that has the correct language, gender and accent for the message you are sending. For example, the default voice `kimberly` is a female who speaks English with an American accent (en-US). Possible values are listed in the [Text-To-Speech guide](/voice/voice-api/guides/text-to-speech#voice-names). | No |
@@ -203,7 +209,7 @@ You can use the following options to control a *talk* action:
 ## Stream
 The `stream` action allows you to send an audio stream to a Conversation
 
-By default, the talk action is synchronous. However, if you set *bargeIn* to *true* you must set an *input* action later in the NCCO stack.  
+By default, the talk action is synchronous. However, if you set *bargeIn* to *true* you must set an *input* action later in the NCCO stack.
 
 The following NCCO example shows how to send an audio stream to a Conversation or Call:
 
@@ -217,7 +223,7 @@ Option | Description | Required
 -- | -- | --
 `streamUrl` | An array containing a single URL to an mp3 or wav (16-bit) audio file to stream to the Call or Conversation. | Yes
 `level` |  Set the audio level of the stream in the range -1 >=level<=1 with a precision of 0.1. The default value is *0*. | No
-`bargeIn` | Set to *true* so this action is terminated when the user presses a button on the keypad. Use this feature to enable users to choose an option without having to listen to the whole message in your [Interactive Voice Response (IVR](/voice/guides/interactive-voice-response) ). If you set `bargeIn` to `true` on one more Stream actions then the next action in the NCCO stack **must** be an `input` action. The default value is `false`. | No
+`bargeIn` | Set to *true* so this action is terminated when the user presses a button on the keypad. Use this feature to enable users to choose an option without having to listen to the whole message in your [Interactive Voice Response (IVR](/voice/guides/interactive-voice-response) ). If you set `bargeIn` to `true` on one more Stream actions then the next non-stream action in the NCCO stack **must** be an `input` action. The default value is `false`.<br /><br />Once `bargeIn` is set to `true` it will stay `true` (even if `bargeIn: false` is set in a following action) until an `input` action is encountered | No
 `loop` | The number of times `audio` is repeated before the Call is closed. The default value is `1`. Set to `0` to loop infinitely. | No
 
 The audio stream referred to should be a file in MP3 or WAV format. If you have issues with the file playing, please encode it to the following technical specification:

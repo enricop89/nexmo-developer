@@ -1,5 +1,7 @@
 ---
 title: Retrieving CNAM Owner Details
+description: Retrieve identity details for US callers.
+navigation_weight: 1
 ---
 
 # Retrieving CNAM Owner Details
@@ -19,11 +21,7 @@ Passing `cname=true` as an extra parameter in a call to the Advanced API looks u
 The following example shows how you would request CNAM data using `curl`:
 
 ```bash
-$ curl -X "POST" "https://api.nexmo.com/ni/advanced/json" \
-> -d "api_key=NEXMO_API_KEY" \
-> -d "api_secret=NEXMO_API_KEY" \
-> -d "number=14155550100" \
-> -d "cname=true"
+$ curl "https://api.nexmo.com/ni/advanced/json?api_key=NEXMO_API_KEY&api_secret=NEXMO_API_SECRET&number=14155550100&cname=true"
 ```
 
 ## Understanding the response

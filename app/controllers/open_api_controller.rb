@@ -58,7 +58,7 @@ class OpenApiController < ApplicationController
     # For now we only use the first tag in the list as an equivalent for the old x-group functionality
     @groups = @definition.endpoints.group_by do |endpoint|
       next nil unless tags
-      endpoint.raw['tags'].first
+      endpoint.raw['tags']&.first
     end
 
     # We want to use the order in which the tags are defined in the definition, so iterate over the tags
@@ -70,7 +70,7 @@ class OpenApiController < ApplicationController
 
     # Sort by the order in which they're defined in the definition
     @groups = @groups.sort_by do |name, _|
-      return 999 if name.nil?
+      next -1 if name.nil?
       ordering[name.capitalize] || 999
     end
   end
@@ -86,51 +86,6 @@ module OasParser
   class Path
     def servers
       raw['servers']
-    end
-  end
-
-  class Parser
-    def self.resolve(path)
-      filename = path.split('#/')[0]
-      content = YAML.load_file(filename)
-      Parser.new(filename, content).resolve
-    end
-
-    def expand_refs(fragment)
-      if fragment.is_a?(Hash) && fragment.key?('$ref')
-        ref = fragment['$ref']
-
-        re = '\A#/'
-        if /#{re}/.match?(ref)
-          expand_pointer(ref)
-        else
-          expand_file(ref)
-        end
-      else
-        fragment
-      end
-    end
-
-    def expand_file(ref)
-      relative_path = ref.split(':').last
-      absolute_path = File.expand_path(File.join('..', relative_path), @path)
-
-      file = Parser.resolve(absolute_path)
-
-      pointer = ref.split('#/')[1]
-      if pointer
-        pointer = '#/' + pointer
-        return Parser.new(absolute_path, file).expand_pointer(pointer)
-      end
-
-      file
-    end
-
-    def expand_pointer(ref)
-      pointer = OasParser::Pointer.new(ref)
-      fragment = pointer.resolve(@content)
-
-      expand_refs(fragment)
     end
   end
 

@@ -225,7 +225,6 @@ HTTP Response | `` `200 OK` `` or §§ `` `404 Not Found` `` | `200 OK` or §§ 
 Balance | `3.14159` | -
 Latency | `3000` | -
 UUID | `aaaaaaaa-bbbb-cccc-dddd-0123456789ab` | -
-SNS ARN | `arn:aws:sns:us-east-1:01234567890:example` | -
 
 ## Numbers
 
@@ -269,6 +268,5 @@ Human readable format | E.164 format
 Some further examples of writing style guides are:
 
 * [Microsoft Style for Technical Publications](https://books.google.co.uk/books/about/The_Microsoft_Manual_of_Style_for_Techni.html)
-* [Magento](http://devdocs.magento.com/guides/v2.0/contributor-guide/contributing_docs.html)
 * [Kubernetes](https://kubernetes.io/docs/home/contribute/style-guide/)
 * [.NET](https://github.com/dotnet/docs/blob/master/styleguide/voice-tone.md)

@@ -1,14 +1,6 @@
 class DocumentationConstraint
   def self.documentation
-    code_language.merge(product)
-  end
-
-  def self.code_language_list
-    CodeLanguageResolver.linkable.map(&:key)
-  end
-
-  def self.code_language
-    { code_language: Regexp.new(code_language_list.compact.join('|')) }
+    CodeLanguage.route_constraint.merge(product)
   end
 
   def self.product_list
@@ -40,7 +32,6 @@ class DocumentationConstraint
       'voice/voice-api',
       'messaging/sms',
       'messaging/conversion-api',
-      'messaging/sns',
       'messaging/us-short-codes',
       'verify',
       'number-insight',

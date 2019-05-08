@@ -77,38 +77,7 @@ pre {
   color: $blue-dark;
 }
 
-.reveal-overlay {
-  background: rgba($mint, 0.4);
-}
-
-.reveal {
-  border-radius: 3px;
-  outline: none;
-  border: $border;
-  box-shadow: $shadow;
-  font-size: 0.85em;
-
-  table td {
-    padding: $spacing / 2;
-  }
-}
-
-
 .Nxd-article {
-
-  .tabs-panel {
-    h2, h3, h4, h5, h6 {
-      margin-top: $spacing;
-
-      &:first-child {
-        margin-top: 0;
-      }
-    }
-
-    h3, h4, h5, h6 {
-      font-size: 1em;
-    }
-  }
 
   li ul, li ol {
     margin-top: 5px;
