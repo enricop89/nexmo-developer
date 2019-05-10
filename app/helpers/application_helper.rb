@@ -143,7 +143,7 @@ module ApplicationHelper
 
       ss = []
       ss << "<li class='navigation-item--#{folder[:title]} navigation-item'>"
-      ss << "<span class='Vlt-sidemenu__trigger'>"
+      ss << "<span class='Vlt-sidemenu__trigger' tabindex='0'>"
 
       # If we have an icon
       if options['svg'] && options['svgColor']
@@ -255,7 +255,8 @@ module ApplicationHelper
 
   def generate_label_classes(label)
     classes = ' '
-    classes += 'Vlt-bg-green' if label.casecmp('beta').zero?
+    classes += 'Vlt-bg-green-lighter Vlt-green' if label.casecmp('beta').zero?
+    classes += 'Vlt-bg-blue-lighter Vlt-blue' if label.casecmp('dev preview').zero?
 
     classes
   end

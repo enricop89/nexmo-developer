@@ -71,7 +71,7 @@ navigation_overrides:
       collapsible: true
       guides:
         lex-connector:
-          label: 'Developer Preview'
+          label: 'Dev Preview'
         websockets:
           label: 'Beta'
     sip:
@@ -88,13 +88,13 @@ navigation_overrides:
     secret-management:
       collapsible: true
   redact:
-    label: 'Developer Preview'
+    label: 'Dev Preview'
     svg: 'lock'
     svgColor: 'red'
   client-sdk:
     svg: 'queue'
     svgColor: 'teal'
-    label: 'Developer Preview'
+    label: 'Dev Preview'
     sdk-documentation:
       link: false
     setup:
@@ -114,6 +114,18 @@ navigation_overrides:
     svg: 'chat'
     svgColor: 'purple'
     label: 'Beta'
+    code-snippets:
+      collapsible: false
+      sms:
+        collapsible: true
+      mms:
+        collapsible: true
+      messenger:
+        collapsible: true
+      viber:
+        collapsible: true
+      whatsapp:
+        collapsible: true
   dispatch:
     svg: 'flow'
     svgColor: 'purple'
@@ -121,11 +133,10 @@ navigation_overrides:
   conversation:
     svg: 'message'
     svgColor: 'teal'
-    label: 'Developer Preview'
+    label: 'Dev Preview'
   vonage-business-cloud:
     svg: 'telephone'
     svgColor: 'green'
-    label: 'Developer Preview'
   contribute:
     administration:
       navigation_weight: 9999
