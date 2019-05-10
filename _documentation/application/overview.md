@@ -12,6 +12,8 @@ Each Nexmo application created can support multiple capabilities - for example y
 
 ![Application Overview](/assets/images/nexmo_application_v2.png "Application Overview")
 
+> **NOTE:** This section of the docs describes [Applications V2](/api/application.v2) functionality.
+
 ## Structure
 
 Each application has the following:
@@ -72,7 +74,3 @@ There are four main ways to create an application:
 2. Using the Nexmo CLI.
 3. Using the [Applications API](https://developer.nexmo.com/api/application.v2).
 4. Using one of the Nexmo client libraries.
-
-## Getting started with applications
-
-Using CLI (awaiting CLI support).
