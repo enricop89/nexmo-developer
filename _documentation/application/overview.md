@@ -70,6 +70,6 @@ Capability | Webhook | Example | Description
 There are four main ways to create an application:
 
 1. In the Nexmo Dashboard (this is currently restricted to v1 Applications with a single fixed capability).
-2. Using the Nexmo CLI.
+2. Using the Nexmo CLI (this is currently restricted to v1 Applications with a single fixed capability).
 3. Using the [Applications API](https://developer.nexmo.com/api/application.v2).
-4. Using one of the Nexmo client libraries.
+4. Using one of the Nexmo client libraries (this is currently restricted to v1 Applications with a single fixed capability).
